@@ -81,7 +81,7 @@ class _tottersHomePageState extends State<tottersHomePage> {
       body: Column(
         children: [
           Container(
-            height: MediaQuery.of(context).size.height - 107,
+            height: MediaQuery.of(context).size.height - 170,
             child: ListView(
               scrollDirection: Axis.vertical,
               children: [

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-
-import 'totters/tottersHome.dart';
+import 'totters/navbarTotters.dart';
 
 void main() {
   runApp(MaterialApp(
-    home: tottersHomePage(),
+    home: navbar(),
     debugShowCheckedModeBanner: false,
   ));
 }
