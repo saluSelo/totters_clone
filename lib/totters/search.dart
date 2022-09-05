@@ -59,7 +59,10 @@ class _searchPageState extends State<searchPage> {
                     ],
                   ),
                   Spacer(),
-                  Icon(Icons.arrow_forward_ios)
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.white,
+                  )
                 ],
               ),
             ),
