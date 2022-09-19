@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:totters_app/totters/myOrders.dart';
 
 class tabsPage extends StatefulWidget {
@@ -7,6 +10,32 @@ class tabsPage extends StatefulWidget {
 }
 
 class _tabsPageState extends State<tabsPage> {
+  Future getOrderData() async {
+    var url = Uri.parse("http://localhost:5000/pastorders");
+    Response response = await get(url);
+
+    String body = response.body;
+
+    List<dynamic> orderList = json.decode(body);
+
+    MyOrders.clear();
+    for (int i = 0; i < orderList.length; i++) {
+      setState(() {
+        MyOrders.add(orderList[i]);
+      });
+    }
+    print(orderList);
+    print('*' * 100);
+    print(MyOrders);
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getOrderData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -38,11 +67,11 @@ class _tabsPageState extends State<tabsPage> {
                     scrollDirection: Axis.vertical,
                     itemBuilder: (BuildContext context, int index) {
                       return orders(
-                        MyOrders[index]['Date'],
+                        MyOrders[index]['order_date'],
                         MyOrders[index]['image'],
                         MyOrders[index]['restName'],
                         MyOrders[index]['amount'],
-                        MyOrders[index]['order'],
+                        MyOrders[index]['order_details'],
                         MyOrders[index]['Price'],
                       );
                     })),
@@ -75,7 +104,7 @@ class _tabsPageState extends State<tabsPage> {
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundImage: AssetImage(restimage),
+                    backgroundImage: NetworkImage(restimage),
                   ),
                   SizedBox(
                     width: 10,

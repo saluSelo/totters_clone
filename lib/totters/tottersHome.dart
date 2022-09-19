@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:carousel_images/carousel_images.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:totters_app/totters/details.dart';
+import 'package:totters_app/totters/myRestuData.dart';
 
 class tottersHomePage extends StatefulWidget {
   @override
@@ -13,27 +16,49 @@ class _tottersHomePageState extends State<tottersHomePage> {
     'images/diet.png',
     'images/shawarma.jpg',
   ];
+  Map data = {};
+  Future getadsData() async {
+    var url = Uri.parse("http://localhost:5000/ads");
+    Response response = await get(url);
 
-  String descriptionFireFire =
-      'we offer the most delicious burgers with our speacial and unique American sauces';
-  int numOfRatesFireFire = 1200;
-  String userNameFireFire = "Adan";
-  String userFireFireComment =
-      '"الطعم كلششش رهيب عاشت ايدكم ان شاء الله مو اخر مرة"';
+    String body = response.body;
 
-  String descriptionCasper =
-      'we dont offer the most delicious burgers with our speacial and unique American sauces';
-  int numOfRatesCasper = 3478;
-  String userNameCasper = "Dania";
-  String userCasperComment = '"عاشت ايدكم الاكل اجة حار و طيب كلشش  احسن مطعم"';
+    List<dynamic> adsList = json.decode(body);
 
-  String descriptionChicken =
-      'مطعم متخصص لوجبات الدجاج الشهية و البيتزا , نقدم اجود انواع وجبات الدجاج باستعمال صلصاتنا الخاصة';
-  int numOfRatesSuperChicken = 8701;
-  String userNameSuperChicken = "Salih";
+    listImages.clear();
+    for (int i = 0; i < adsList.length; i++) {
+      setState(() {
+        listImages.add(adsList[i]['image']);
 
-  String userSuperChickenComment =
-      '"اطيب مطعم اكلت يمه كنتاكي و ستربس بعد دائما اطلب منكم"';
+        // print(adsList);
+      });
+    }
+  }
+
+  Future getrestaurantsData() async {
+    var url = Uri.parse("http://localhost:5000/restaurants");
+    Response response = await get(url);
+
+    String body = response.body;
+
+    List<dynamic> restaurantList = json.decode(body);
+
+    myRestu.clear();
+
+    for (int i = 0; i < restaurantList.length; i++) {
+      setState(() {
+        myRestu.add(restaurantList[i]);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getadsData();
+    getrestaurantsData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +131,11 @@ class _tottersHomePageState extends State<tottersHomePage> {
                 SizedBox(
                   height: 20,
                 ),
-                CarouselImages(listImages: listImages, height: 200),
+                CarouselImages(
+                  listImages: listImages,
+                  height: 200,
+                  cachedNetworkImage: true,
+                ),
                 SizedBox(
                   height: 30,
                 ),
@@ -172,41 +201,24 @@ class _tottersHomePageState extends State<tottersHomePage> {
                 ),
                 Container(
                     height: MediaQuery.of(context).size.height,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        posts(
-                            'images/burger.jpg',
-                            'Fire Fire Burger',
-                            '4.9',
-                            35,
-                            45,
-                            descriptionFireFire,
-                            numOfRatesFireFire,
-                            userNameFireFire,
-                            userFireFireComment),
-                        posts(
-                            'images/pasta.jpg',
-                            "Casper's and Gambini",
-                            '4.5',
-                            60,
-                            70,
-                            descriptionCasper,
-                            numOfRatesCasper,
-                            userNameCasper,
-                            userCasperComment),
-                        posts(
-                            'images/chicken.jpg',
-                            "Super Chicken",
-                            '4.8',
-                            25,
-                            35,
-                            descriptionChicken,
-                            numOfRatesSuperChicken,
-                            userNameSuperChicken,
-                            userSuperChickenComment),
-                      ],
-                    ))
+                    child: ListView.builder(
+                        itemCount: myRestu.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int index) {
+                          return posts(
+                            myRestu[index]['id'],
+                            myRestu[index]['imageRestu'],
+                            myRestu[index]['resturantName'],
+                            myRestu[index]['rate'],
+                            myRestu[index]['min_time'],
+                            myRestu[index]['max_time'],
+                            myRestu[index]['description'],
+                            myRestu[index]['numOfRates'],
+                            myRestu[index]['userName'],
+                            myRestu[index]['userComment'],
+                            myRestu[index]['cashback'],
+                          );
+                        }))
               ],
             ),
           ),
@@ -225,7 +237,7 @@ class _tottersHomePageState extends State<tottersHomePage> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
-              BoxShadow(offset: Offset(0, 1), spreadRadius: 1, blurRadius: 12)
+              BoxShadow(offset: Offset(0, 1), spreadRadius: 1, blurRadius: 5)
             ],
             color: Colors.white,
           ),
@@ -234,14 +246,14 @@ class _tottersHomePageState extends State<tottersHomePage> {
             children: [
               Image.asset(
                 boximage,
-                width: 100,
+                width: 120,
                 height: 70,
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
                 child: Text(
                   name,
-                  style: TextStyle(fontSize: 18, fontFamily: 'Tajawal'),
+                  style: TextStyle(fontSize: 20, fontFamily: 'Tajawal'),
                 ),
               )
             ],
@@ -252,6 +264,7 @@ class _tottersHomePageState extends State<tottersHomePage> {
   }
 
   Widget posts(
+      var id,
       String imagePost,
       String resturantName,
       String rate,
@@ -260,11 +273,13 @@ class _tottersHomePageState extends State<tottersHomePage> {
       String description,
       int numberOfRates,
       String user_Name,
-      String user_Comment) {
+      String user_Comment,
+      String cashback) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => detailsPage(
+                  id: id,
                   image: imagePost,
                   restName: resturantName,
                   restRate: rate,
@@ -290,7 +305,7 @@ class _tottersHomePageState extends State<tottersHomePage> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       image: DecorationImage(
-                          image: AssetImage(imagePost), fit: BoxFit.cover)),
+                          image: NetworkImage(imagePost), fit: BoxFit.cover)),
                 ),
                 Positioned(
                     left: 32,
@@ -330,7 +345,7 @@ class _tottersHomePageState extends State<tottersHomePage> {
                             Text(
                               '$minTime - $maxTime',
                               style:
-                                  TextStyle(color: Colors.black, fontSize: 14),
+                                  TextStyle(color: Colors.black, fontSize: 12),
                             ),
                             Text('mins')
                           ],
@@ -390,6 +405,41 @@ class _tottersHomePageState extends State<tottersHomePage> {
                                             Icons.add,
                                             color: Colors.cyan,
                                           ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 7,
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(right: 10),
+                                      width: 115,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        color: Color(0xFFfef6f3),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.attach_money_rounded,
+                                            color: Color(0xffbe6d47),
+                                            size: 15,
+                                          ),
+                                          SizedBox(
+                                            width: 4,
+                                          ),
+                                          Text(
+                                            '$cashback% cashback',
+                                            style: TextStyle(
+                                                color: Color(0Xffbe6d47),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold),
+                                          )
                                         ],
                                       ),
                                     ),

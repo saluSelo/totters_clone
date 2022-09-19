@@ -1,6 +1,13 @@
+import 'dart:convert';
+
+import 'package:http/http.dart';
 import 'package:flutter/material.dart';
+import 'package:totters_app/totters/orderInfo.dart';
+
+import 'mymealsData.dart';
 
 class detailsPage extends StatefulWidget {
+  final dynamic id;
   final String restName;
   final String restRate;
   final String description;
@@ -13,6 +20,7 @@ class detailsPage extends StatefulWidget {
 
   const detailsPage({
     Key? key,
+    required this.id,
     required this.restName,
     required this.restRate,
     required this.description,
@@ -29,6 +37,29 @@ class detailsPage extends StatefulWidget {
 }
 
 class _detailsPageState extends State<detailsPage> {
+  Future getmealsData() async {
+    var url = Uri.parse("http://localhost:5000/meals");
+    Response response = await get(url);
+
+    String body = response.body;
+
+    List<dynamic> mealsList = json.decode(body);
+
+    myeals.clear();
+    for (int i = 0; i < mealsList.length; i++) {
+      setState(() {
+        myeals.add(mealsList[i]);
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getmealsData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,9 +80,26 @@ class _detailsPageState extends State<detailsPage> {
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                           image: DecorationImage(
-                              image: AssetImage(widget.image),
+                              image: NetworkImage(widget.image),
                               fit: BoxFit.cover)),
                     ),
+                    Positioned(
+                        top: 20,
+                        left: 20,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: Colors.white,
+                            ),
+                            child: Icon(Icons.arrow_back),
+                          ),
+                        )),
                     Positioned(
                         right: 35,
                         bottom: -20,
@@ -298,7 +346,28 @@ class _detailsPageState extends State<detailsPage> {
                                   )
                                 ],
                               )),
-                        )
+                        ),
+                        Text('Menu',
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.w600)),
+                        Container(
+                          margin: EdgeInsets.only(top: 5, bottom: 10),
+                          height: 1.5,
+                          width: MediaQuery.of(context).size.width,
+                          color: Colors.grey.withOpacity(0.6),
+                        ),
+                        Container(
+                            height: MediaQuery.of(context).size.height,
+                            child: ListView.builder(
+                                itemCount: myeals.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return meals(
+                                    myeals[index]['mealname'],
+                                    myeals[index]['mealingredients'],
+                                    myeals[index]['mealprice'],
+                                    myeals[index]['mealimage'],
+                                  );
+                                }))
                       ],
                     ),
                   ),
@@ -307,6 +376,58 @@ class _detailsPageState extends State<detailsPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget meals(String mealname, String mealingredients, dynamic mealprice,
+      String mealimage) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => orderInfo(
+                  mealname: mealname,
+                  mealingredients: mealingredients,
+                  mealprice: mealprice,
+                  mealimage: mealimage,
+                )));
+      },
+      child: Container(
+        margin: EdgeInsets.only(top: 8, bottom: 4),
+        width: MediaQuery.of(context).size.width,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$mealname',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Padding(
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+                      child: Text(
+                        '$mealingredients',
+                      )),
+                  Text(
+                    'IQD $mealprice',
+                    style: TextStyle(color: Colors.green),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  image: DecorationImage(
+                      fit: BoxFit.cover, image: NetworkImage('$mealimage'))),
+            )
+          ],
+        ),
       ),
     );
   }
