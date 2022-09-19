@@ -412,7 +412,7 @@ class _detailsPageState extends State<detailsPage> {
                         '$mealingredients',
                       )),
                   Text(
-                    'IQD $mealprice',
+                    'IQD ${mealprice}000',
                     style: TextStyle(color: Colors.green),
                   )
                 ],
