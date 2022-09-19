@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:totters_app/totters/myOrders.dart';
+import 'package:totters_app/totersData/myOrdersData.dart';
 
 class tabsPage extends StatefulWidget {
   @override

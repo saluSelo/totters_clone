@@ -3,7 +3,7 @@ import 'package:carousel_images/carousel_images.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:totters_app/totters/details.dart';
-import 'package:totters_app/totters/myRestuData.dart';
+import 'package:totters_app/totersData/myRestuData.dart';
 
 class tottersHomePage extends StatefulWidget {
   @override

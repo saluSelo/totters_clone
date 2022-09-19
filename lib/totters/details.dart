@@ -4,7 +4,7 @@ import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:totters_app/totters/orderInfo.dart';
 
-import 'mymealsData.dart';
+import '../totersData/myMealsData.dart';
 
 class detailsPage extends StatefulWidget {
   final dynamic id;
