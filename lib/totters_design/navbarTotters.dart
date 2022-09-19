@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:totters_app/totters/butlerPage.dart';
-import 'package:totters_app/totters/profileTotters.dart';
-import 'package:totters_app/totters/search.dart';
-import 'package:totters_app/totters/tabsPage.dart';
-import 'package:totters_app/totters/tottersHome.dart';
+import 'package:totters_app/Screens/butlerPage.dart';
+import 'package:totters_app/Screens/profileTotters.dart';
+import 'package:totters_app/Screens/search.dart';
+import 'package:totters_app/Screens/tabsPage.dart';
+import 'package:totters_app/Screens/tottersHome.dart';
 
 class navbar extends StatefulWidget {
   const navbar({Key? key}) : super(key: key);

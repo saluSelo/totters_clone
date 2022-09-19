@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'totters/navbarTotters.dart';
+import 'totters_design/navbarTotters.dart';
 
 void main() {
   runApp(MaterialApp(
